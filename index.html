@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Companion - Outings & Trips</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        .trip-card:hover {
+            transform: translateY(-5px);
+            transition: transform 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <div class="text-xl font-semibold text-gray-800">Student Companion</div>
+                <div class="space-x-4">
+                    <button class="text-gray-600 hover:text-gray-800"><i class="bi bi-bell"></i></button>
+                    <button class="text-gray-600 hover:text-gray-800"><i class="bi bi-person-circle"></i></button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-6xl mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-800">Outings & Trips</h1>
+            <button onclick="openNewTripModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                <i class="bi bi-plus-lg mr-2"></i>Share New Trip
+            </button>
+        </div>
+
+        <!-- Filters -->
+        <div class="mb-8 flex flex-wrap gap-4">
+            <select id="tripType" class="bg-white border rounded-lg px-4 py-2">
+                <option value="all">All Trips</option>
+                <option value="upcoming">Upcoming</option>
+                <option value="past">Past Experiences</option>
+            </select>
+            <input type="text" placeholder="Search destinations..." class="bg-white border rounded-lg px-4 py-2 flex-grow">
+        </div>
+
+        <!-- Trip Cards Container -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="tripContainer">
+            <!-- Trip cards will be dynamically added here -->
+        </div>
+    </main>
+
+    <!-- New Trip Modal -->
+    <div id="newTripModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+        <div class="bg-white rounded-lg p-6 w-full max-w-lg">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold">Share New Trip</h2>
+                <button onclick="closeNewTripModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+            <form id="newTripForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1">Destination</label>
+                    <input type="text" required class="w-full border rounded-lg px-3 py-2">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Start Date</label>
+                        <input type="date" required class="w-full border rounded-lg px-3 py-2">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">End Date</label>
+                        <input type="date" required class="w-full border rounded-lg px-3 py-2">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Description</label>
+                    <textarea required class="w-full border rounded-lg px-3 py-2" rows="3"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Maximum Participants</label>
+                    <input type="number" required class="w-full border rounded-lg px-3 py-2" min="1">
+                </div>
+                <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">
+                    Share Trip
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Sample trip data
+        const trips = [
+            {
+                id: 1,
+                destination: "Beach Weekend Getaway",
+                date: "2024-02-15",
+                endDate: "2024-02-17",
+                description: "Join us for a relaxing weekend at the beach! Activities include surfing, volleyball, and bonfire.",
+                participants: 8,
+                maxParticipants: 12,
+                imageUrl: "https://source.unsplash.com/random/800x600/?beach",
+                creator: "Alex Johnson"
+            },
+            {
+                id: 2,
+                destination: "Mountain Hiking Adventure",
+                date: "2024-03-01",
+                endDate: "2024-03-03",
+                description: "Experience the thrill of mountain hiking! Stunning views and great company guaranteed.",
+                participants: 5,
+                maxParticipants: 10,
+                imageUrl: "https://source.unsplash.com/random/800x600/?mountain",
+                creator: "Sarah Smith"
+            }
+        ];
+
+        // Function to render trips
+        function renderTrips() {
+            const container = document.getElementById('tripContainer');
+            container.innerHTML = '';
+
+            trips.forEach(trip => {
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-lg shadow-md overflow-hidden trip-card';
+                card.innerHTML = `
+                    <img src="${trip.imageUrl}" alt="${trip.destination}" class="w-full h-48 object-cover">
+                    <div class="p-4">
+                        <h3 class="text-xl font-semibold mb-2">${trip.destination}</h3>
+                        <p class="text-gray-600 mb-2">${trip.description}</p>
+                        <div class="flex items-center text-sm text-gray-500 mb-4">
+                            <i class="bi bi-calendar-event mr-2"></i>
+                            ${new Date(trip.date).toLocaleDateString()} - ${new Date(trip.endDate).toLocaleDateString()}
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div class="text-sm">
+                                <i class="bi bi-people-fill mr-1"></i>
+                                ${trip.participants}/${trip.maxParticipants} joined
+                            </div>
+                            <button onclick="joinTrip(${trip.id})" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+                                Join Trip
+                            </button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Modal functions
+        function openNewTripModal() {
+            document.getElementById('newTripModal').classList.remove('hidden');
+        }
+
+        function closeNewTripModal() {
+            document.getElementById('newTripModal').classList.add('hidden');
+        }
+
+        // Join trip function
+        function joinTrip(tripId) {
+            const trip = trips.find(t => t.id === tripId);
+            if (trip && trip.participants < trip.maxParticipants) {
+                trip.participants++;
+                renderTrips();
+                alert('Successfully joined the trip!');
+            } else {
+                alert('Sorry, this trip is full!');
+            }
+        }
+
+        // Form submission
+        document.getElementById('newTripForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // Here you would normally handle the form data and add it to the database
+            alert('Trip shared successfully!');
+            closeNewTripModal();
+        });
+
+        // Initialize the page
+        renderTrips();
+    </script>
+<script>document.body.addEventListener('wheel', e => { if (!e.ctrlKey) return; e.preventDefault(); return }, { passive: false })</script>
+	</body>
+</html>
